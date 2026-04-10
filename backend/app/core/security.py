@@ -38,3 +38,6 @@ def create_access_token(data: dict) -> str:
         algorithm=settings.ALGORITHM
     )
     return encoded_jwt
+
+
+#remaq:éventuellement création/vérification d’un reset token

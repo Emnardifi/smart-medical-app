@@ -10,11 +10,6 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
-class UserCreate(BaseModel):
-    full_name: str
-    email: EmailStr
-    password: str
-    
 # données retournées par le backend pour afficher un utilisateur
 class UserResponse(BaseModel):
     id: int
