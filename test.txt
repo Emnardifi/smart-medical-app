@@ -1,0 +1,4 @@
+api(routes)==> services(cerveau de backend, code illi  y decidii kifeh l app fonct)  ==>  repository(crud) ==>    modeles(tab)  ==>   bd(serv sto)
+1 tab=1model=1repository
+services = use case 
+  core , schemas(pydantic)
