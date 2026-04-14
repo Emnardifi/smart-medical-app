@@ -4,7 +4,9 @@ __pycache__/
 
 # Virtual environment
 venv/
+venv_tf/
 backend/venv/
+backend/venv_tf/
 
 # Environment variables
 .env
