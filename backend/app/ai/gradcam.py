@@ -9,7 +9,7 @@ import cv2
 #derniere couche conv de densenet121
 LAST_CONV_LAYER_NAME = "conv5_block16_concat"
 
-def generate_gradcam(image_path:str,save_dir:str = "app/static/gradcam")->str :
+def generate_gradcam(image_path:str,save_dir:str)->str :
     #charger model 
     model=get_model()
     
@@ -88,7 +88,7 @@ def generate_gradcam(image_path:str,save_dir:str = "app/static/gradcam")->str :
     
     # construire le nom du fichier final
     file_name = os.path.basename(image_path)
-    save_path = os.path.join(save_dir, f"gradcam_{file_name}")
+    save_path = os.path.join(save_dir, f"heatmap_{file_name}")
     
     # sauvegarder l'image finale
     cv2.imwrite(save_path, superimposed_img)

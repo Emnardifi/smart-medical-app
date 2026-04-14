@@ -1,8 +1,8 @@
-from tensorflow.keras.models import load_model
-
+import tensorflow as tf
+from pathlib import Path
 #chemin du model
-path_model="app/ai/model/best_final_densenet.keras"
-
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "model" / "best_final_densenet.keras"
 # variable globale pour stocker le modèle
 loaded_model=None
 
@@ -12,6 +12,6 @@ def get_model():
     
     #verifier nestt pas chargé
     if loaded_model is None:
-        loaded_model=load_model(path_model)
+        loaded_model=tf.keras.models.load_model(MODEL_PATH)
     return loaded_model
     
