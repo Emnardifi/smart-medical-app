@@ -2,3 +2,12 @@ api(routes)==> services(cerveau de backend, code illi  y decidii kifeh l app fon
 1 tab=1model=1repository
 services = use case 
   core , schemas(pydantic)
+
+
+  {
+    "nnnnnn":{"conv5_block16_concat":[rrrrrrrr,rrr']},
+    {}:mmmm,
+
+
+  }
+  #expliqation des router 

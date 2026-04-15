@@ -18,7 +18,7 @@ def _analysis_exists(analysis):
         )
         
 def _analysis_belongs_to_user(analysis,current_user:User):
-    if current_user.id!=analysis.user_id :
+    if current_user.id!=analysis.user_id and current_user.role != "admin":
         raise  HTTPException(
             status_code=401,
             detail=" this analysis don't belongs to this user!"

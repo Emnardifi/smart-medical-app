@@ -16,6 +16,8 @@ SessionLocal = sessionmaker(
 Base = declarative_base()
 
 #fonction pour gestion propre de sessions 
+# ouvrir → utiliser → fermer (automatique)
+#On ferme la session DB pour libérer les ressources après chaque requête
 def get_bd():
     #ouvre la session bd 
     bd = SessionLocal()

@@ -57,7 +57,7 @@ def _run_ai(image_path:str)-> tuple[str,float,str]:
         )
         
 #fonction principales 
-def create_analysis(db:Session,current_user:User,upload_file: UploadFile ,uploaded_dir:str="backend/uploads"):
+def create_analysis_service(db:Session,current_user:User,upload_file: UploadFile ,uploaded_dir:str="backend/uploads"):
     file_extension =_extract_extension(upload_file.filename)
     _validate_image_extension(file_extension)
     os.makedirs(uploaded_dir, exist_ok=True)
