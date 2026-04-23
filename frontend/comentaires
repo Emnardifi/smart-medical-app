@@ -1,0 +1,12 @@
+pages/ = les grandes pages
+components/ = les morceaux réutilisables
+services/ = communication avec le backend
+context/ = état global comme auth
+hooks/ = logique réutilisable
+router/ = navigation entre les pages
+assets/ = images, icônes
+utils/ = petites fonctions utiles
+App.jsx = structure principale
+main.jsx = point de démarrage
+
+
