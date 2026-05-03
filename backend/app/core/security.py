@@ -14,11 +14,11 @@ pwd_context = CryptContext(
 
 #hasher  un password --> register 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return pwd_context.hash(password[:72])
 
 #verification du password  --> use dans login 
 def verify_password(plain_password : str,hashed_password : str) -> bool:
-    return pwd_context.verify(plain_password,hashed_password)
+    return pwd_context.verify(plain_password[:72],hashed_password)
 
 #creation de token(user) apres login :preuve que user est connecté
 def create_access_token(data: dict) -> str:

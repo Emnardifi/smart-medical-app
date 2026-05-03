@@ -10,9 +10,8 @@ threshold = 0.6
 
 
 #fonction de prediction 
-def predict_image(path_image : str) ->dict: 
+def predict_image(image) ->dict: 
     model = get_model()
-    image = preprocess_image(path_image)
     predict = model.predict(image, verbose=0)[0][0]
     if predict > threshold :
         label= CLASS[1] 
@@ -22,5 +21,3 @@ def predict_image(path_image : str) ->dict:
         "prediction": label,
         "probability": float(predict)
     }
-    
-    

@@ -5,20 +5,20 @@ from app.repository.report_repository import create_report,get_report_by_id,get_
 from app.repository.image_repository import get_image_by_id
 from app.core.security import hash_password,verify_password,create_access_token
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, UploadFile, File #un objet temporaire pour recevoir le fichier envoyé par le client
+from fastapi import HTTPException, UploadFile, File,status #un objet temporaire pour recevoir le fichier envoyé par le client
 
 #helpers
 def _analysis_exists(analysis):
     if not analysis:
         raise  HTTPException(
-            status_code=401,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="analysis not found!"
         )
         
 def _analysis_belongs_to_user(analysis,current_user:User):
-    if current_user.id!=analysis.user_id :
+    if current_user.id!=analysis.user_id and current_user.role != "admin":
         raise  HTTPException(
-            status_code=401,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail=" this analysis don't belongs to this user!"
         )
 

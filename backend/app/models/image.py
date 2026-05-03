@@ -9,7 +9,7 @@ class Image(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     # utilisateur qui a uploadé l'image
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # nom original du fichier
     original_filename = Column(String(255), nullable=False)

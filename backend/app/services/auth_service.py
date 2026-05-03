@@ -4,13 +4,13 @@ from app.schemas.auth import ResetPasswordRequest,ForgotPasswordRequest
 from app.repository.user_repository import get_all_users,delete_user,update_user_password,update_user,create_user,get_user_by_id,get_user_by_email
 from app.core.security import hash_password,verify_password,create_access_token,decode_token,create_reset_token
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 #helpres
-def _email_used(db:Session,email:str,user_id:int | None):
+def _email_used(db:Session,email:str,user_id:int = None):
     existing_user=get_user_by_email(db,email)#user or none
     if existing_user and existing_user.id!=user_id :
         raise  HTTPException(
-            status_code=401,
+            status_code=status.HTTP_409_CONFLICT,
             detail="Email existe deja !"
         )
         
@@ -19,7 +19,7 @@ def _email_used(db:Session,email:str,user_id:int | None):
 def _user_is_active(user:User):
     if not user.is_active:
         raise  HTTPException(
-            status_code=401,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="inactive account"
         )
 
@@ -43,7 +43,7 @@ def login_user(db: Session, email: str, password: str) -> dict: #return : un fic
     user=get_user_by_email(db,email)
     if not user:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
         )
 
@@ -51,7 +51,7 @@ def login_user(db: Session, email: str, password: str) -> dict: #return : un fic
 
     if not check_pw:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"
         )
         
@@ -64,8 +64,8 @@ def login_user(db: Session, email: str, password: str) -> dict: #return : un fic
     
 #fonct update profile
 def update_profile(db:Session,user:User,user_data:UserUpdate) ->User:
-    if user_data.email is not None :
-        _email_used(db,user_data.email,user.id)
+    if user_data.email is not None and user_data.email != user.email:
+        _email_used(db, user_data.email, user.id)
     updated_user = update_user(
         db,
         user,
@@ -79,7 +79,7 @@ def update_password(db:Session,user:User,password_data:ChangePassword):
     check_pw=verify_password(password_data.old_password,user.hashed_password)
     if not check_pw :
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="old password is incorrect!"
         )
     new_hashed_password=hash_password(password_data.new_password)
@@ -117,28 +117,28 @@ def reset_password_service(db: Session, token: str, new_password: str):
 
     if payload is None:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token invalide ou expiré."
         )
 
     token_type = payload.get("type")
     if token_type != "reset":
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Type de token invalide."
         )
 
     email = payload.get("sub")
     if email is None:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Token invalide : email manquant."
         )
 
     user = get_user_by_email(db, email)
     if not user:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Utilisateur introuvable."
         )
 
@@ -148,3 +148,10 @@ def reset_password_service(db: Session, token: str, new_password: str):
     return {
         "message": "Mot de passe réinitialisé avec succès."
     }
+    
+    
+    """400 BAD REQUEST : données incorrectes, comme ancien mot de passe faux.
+401 UNAUTHORIZED : problème d’authentification, token invalide ou login faux.
+403 FORBIDDEN : utilisateur connu mais compte inactif.
+404 NOT FOUND : utilisateur introuvable.
+409 CONFLICT : email déjà utilisé."""
