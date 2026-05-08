@@ -1,9 +1,7 @@
-//  Import des éléments nécessaires de react-router-dom
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-//  Import du Layout ou il y a  (Navbar + contenu)
+
 import Layout from "../components/Layout"
 
-//  Import des pages
 import Login from "../pages/Login"
 import Register from "../pages/Register"
 import Dashboard from "../pages/Dashboard"
@@ -13,29 +11,19 @@ import Profile from "../pages/Profile"
 
 function AppRouter() {
   return (
-    //  BrowserRouter permet d'activer le système de routage dans l'application
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/Analyze" />} />  {/*on a ajouter une route pour que le serveur yhezna lil login direct */}
 
-        {/* =========================
-              Routes publiques
-            ========================= */}
+        {/* Redirection page principale */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        {/*  Page de connexion */}
-        <Route path="/Login" element={<Login />} />
+        {/* Routes publiques */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        {/*  Page d'inscription */}
-        <Route path="/Register" element={<Register />} />
-
-
-        {/* =========================
-             Routes avec Layout
-            ========================= */}
-
-        {/*  Dashboard avec Navbar */}
+        {/* Routes avec Layout */}
         <Route
-          path="/Dashboard"
+          path="/dashboard"
           element={
             <Layout>
               <Dashboard />
@@ -43,9 +31,8 @@ function AppRouter() {
           }
         />
 
-        {/*  Page Analyze avec Navbar */}
         <Route
-          path="/Analyze"
+          path="/analyze"
           element={
             <Layout>
               <Analyze />
@@ -53,9 +40,8 @@ function AppRouter() {
           }
         />
 
-        {/*  Page History avec Navbar */}
         <Route
-          path="/History"
+          path="/history"
           element={
             <Layout>
               <History />
@@ -63,9 +49,8 @@ function AppRouter() {
           }
         />
 
-        {/*  Page Profile avec Navbar */}
         <Route
-          path="/Profile"
+          path="/profile"
           element={
             <Layout>
               <Profile />
@@ -78,5 +63,4 @@ function AppRouter() {
   )
 }
 
-//  Export du router pour l'utiliser dans App.jsx
 export default AppRouter

@@ -16,7 +16,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
     response_model=UserResponse,
     summary="Afficher mon profil"
 )
-def get_my_profile(current_user: User = Depends(get_current_user)):
+def get_my_profile(current_user: User = Depends(get_current_user)): 
     return current_user
 
 #route update profil
