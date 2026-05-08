@@ -6,7 +6,7 @@ from app.core.database import SessionLocal,get_bd
 from app.core.security import create_access_token,decode_token
 # Modèle User pour récupérer l'utilisateur depuis la base
 from app.models.user import User
-
+from app.repository.user_repository import get_user_by_email
 
 #definir le sys de recuperation du token :lit le token depuis req http:lire le token après login
 # tokenUrl doit pointer vers ta route de login
@@ -36,7 +36,7 @@ def get_current_user(
         raise exception
     
     #chercher user dans db 
-    user =db.query(User).filter(User.email == email).first()
+    user =get_user_by_email(db, email)
     #si pas user 
     if user is None:
         raise exception

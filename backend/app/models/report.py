@@ -10,7 +10,7 @@ class Report(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     # analyse liée à ce rapport
-    analysis_id = Column(Integer, ForeignKey("analyses.id"), nullable=False)
+    analysis_id = Column(Integer, ForeignKey("analyses.id", ondelete="CASCADE"), nullable=False)
 
     # chemin du fichier PDF
     file_path = Column(String(500), nullable=False)

@@ -22,9 +22,12 @@ app = FastAPI(
     description="API de détection de la pneumonie avec gestion utilisateurs, analyses et rapports PDF"
 )
 
-
+#supp des tab 
+Base.metadata.drop_all(bind=engine)
+print("Tables supp  done.")
 # création des tables
 Base.metadata.create_all(bind=engine)
+print("Tables creation done.")
 
 @app.get("/", tags=["Root"])
 def root():

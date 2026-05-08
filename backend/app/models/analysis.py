@@ -10,10 +10,10 @@ class Analysis(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     # utilisateur qui a lancé l'analyse
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     # image analysée
-    image_id = Column(Integer, ForeignKey("images.id"), nullable=False)
+    image_id = Column(Integer, ForeignKey("images.id", ondelete="CASCADE"), nullable=False)
 
     # résultat du modèle : NORMAL ou PNEUMONIA
     prediction = Column(String(50), nullable=False)

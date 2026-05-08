@@ -5,8 +5,10 @@ __pycache__/
 # Virtual environment
 venv/
 venv_tf/
+venv_ai/
 backend/venv/
 backend/venv_tf/
+backend/venv_ai/
 
 # Environment variables
 .env
@@ -22,3 +24,12 @@ frontend/dist/
 # OS files
 .DS_Store
 Thumbs.db
+
+# AI model
+*.h5
+*.keras
+
+# folders dynamiques
+backend/uploads/
+backend/reports/
+backend/heatmaps/
