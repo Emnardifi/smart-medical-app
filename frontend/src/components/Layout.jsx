@@ -1,20 +1,22 @@
-//  Import du composant Navbar
-import Navbar from "./Navbar/Navbar"
+import Sidebar from "./sidebar" // importer le composant Sidebar
 
 function Layout({ children }) {
-  return (
-    <div>
-      {/*  La barre de navigation s'affiche en haut */}
-      <Navbar />
+  // children représente le contenu de la page (Profile, Dashboard, etc.)
 
-      {/*  Zone principale qui affiche le contenu de la page actuelle */}
-      {/* children représente la page qu'on veut afficher */}
-      <main className="main-content">
-        {children}
+  return (
+    // container principal (sidebar + contenu)
+    <div className="flex min-h-screen">
+
+      {/* sidebar à gauche */}
+      <Sidebar />
+
+      {/* contenu principal à droite */}
+      <main className="flex-1 bg-gray-100 p-6">
+        {children} {/* affichage de la page */}
       </main>
+
     </div>
   )
 }
 
-//  Export du composant Layout pour l'utiliser dans le Router
 export default Layout
