@@ -1,18 +1,25 @@
-function StatCard({title, value, description}){ //Ce sont des props, Ça permet d’utiliser le même composant plusieurs fois avec des données différentes.
-    return(
+import Card from "../common/Card"
 
-     <div>
-      {/* titre de la statistique */}
-      <h4>{title}</h4>
+const StatCard = ({ title, value, description, color = "blue" }) => {
+  const colors = {
+    blue: "border-blue-600 text-slate-900",
+    green: "border-emerald-500 text-emerald-600",
+    red: "border-red-500 text-red-600",
+  }
 
-      {/* valeur principale */}
-      <h2>{value}</h2>
+  return (
+    <Card className={`border-l-4 ${colors[color]}`}>
+      <p className="text-gray-500">{title}</p>
 
-      {/* petite description */}
-      <p>{description}</p>
-    </div>
+      <h2 className={`mt-2 text-3xl font-bold ${colors[color]}`}>
+        {value}
+      </h2>
+
+      <p className="mt-1 text-sm text-gray-400">
+        {description}
+      </p>
+    </Card>
   )
 }
 
 export default StatCard
-//on va applere ce composant 4 fois dans Dashboard pour analyses totales, resultas normaux, pneumonia detectee, derniere analyse, et les props ykhalouna nbadlou les valeurs mn khilelhom

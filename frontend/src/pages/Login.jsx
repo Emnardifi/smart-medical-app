@@ -1,28 +1,37 @@
-// Import des hooks React pour gérer l'état (state)
+// Import des hooks React pour gérer l'état
 import { useState } from "react"
 
 // Import pour la navigation entre les pages + lien vers register
 import { useNavigate, Link } from "react-router-dom"
 
-// Import de la fonction login depuis le service (API)
-import { loginUser } from "../services/authService"
+// Import du hook personnalisé pour utiliser AuthContext
+import { useAuth } from "../hooks/useAuth"
+
+// Import des composants réutilisables
+import Input from "../components/common/Input"
+import Button from "../components/common/Button"
+import Card from "../components/common/Card"
+import Loading from "../components/common/Loading"
 
 function Login() {
 
   // State pour stocker l'email saisi par l'utilisateur
   const [email, setEmail] = useState("")
 
-  // State pour stocker le mot de passe 
+  // State pour stocker le mot de passe
   const [password, setPassword] = useState("")
 
   // State pour afficher les messages d'erreur
   const [error, setError] = useState("")
 
-  // State pour gérer le loading (bouton "Connexion...")
+  // State pour gérer le loading du formulaire
   const [loading, setLoading] = useState(false)
 
   // Hook pour rediriger vers une autre page
   const navigate = useNavigate()
+
+  // Récupération de la fonction login depuis AuthContext
+  const { login } = useAuth()
 
   // Fonction exécutée quand on soumet le formulaire
   const handleSubmit = async (e) => {
@@ -40,34 +49,41 @@ function Login() {
     }
 
     try {
-      // Active le loading (désactive le bouton)
+
+      // Active le loading
       setLoading(true)
 
-      // Appel au backend via authService
-      const res = await loginUser(email, password)
+      // Appel de la fonction login depuis AuthContext
+      const userData = await login(email, password)
 
-      // Stockage du token dans localStorage (authentification)
-      localStorage.setItem("token", res.data.access_token)
+      // Si login échoue
+      if (!userData) {
+        setError("Email ou mot de passe incorrect")
+        return
+      }
 
-      // Redirection vers le dashboard après login réussi
+      // Redirection vers dashboard
       navigate("/dashboard")
 
     } catch (err) {
-      // Si erreur (email ou mot de passe incorrect)
+
+      // Message erreur
       setError("Email ou mot de passe incorrect")
 
     } finally {
-      // Désactive le loading dans tous les cas
+
+      // Désactive loading
       setLoading(false)
     }
   }
 
   return (
-    // Container principal centré verticalement et horizontalement
+
+    // Container principal centré
     <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
 
       {/* Carte contenant le formulaire */}
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-10">
+      <Card className="w-full max-w-xl rounded-2xl shadow-xl p-10">
 
         {/* Titre */}
         <h1 className="text-4xl font-bold text-center text-slate-900">
@@ -80,52 +96,57 @@ function Login() {
         </p>
 
         {/* Formulaire */}
-        <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+        <form onSubmit={handleSubmit} className="mt-10">
 
           {/* Champ Email */}
-          <div>
-            <label className="block text-slate-800 font-medium mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="votre.email@exemple.com"
-              value={email} // lié au state
-              onChange={(e) => setEmail(e.target.value)} // mise à jour du state
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <Input
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="votre.email@exemple.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
           {/* Champ Mot de passe */}
-          <div>
-            <label className="block text-slate-800 font-medium mb-2">
-              Mot de passe
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <Input
+            label="Mot de passe"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {/* Lien mot de passe oublié */}
+          <div className="flex justify-end mb-4">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Mot de passe oublié ?
+            </Link>
           </div>
 
-          {/* Affichage erreur si موجودة */}
+          {/* Affichage erreur */}
           {error && (
-            <p className="text-red-600 text-sm text-center">
+            <p className="text-red-600 text-sm text-center mb-4">
               {error}
             </p>
           )}
 
+          {/* Animation loading */}
+          {loading && <Loading />}
+
           {/* Bouton login */}
-          <button
+          <Button
             type="submit"
-            disabled={loading} // désactivé pendant loading
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition disabled:opacity-60"
+            disabled={loading}
+            className="w-full py-3 rounded-xl font-semibold"
           >
-            {/* Texte dynamique */}
             {loading ? "Connexion..." : "Se connecter"}
-          </button>
+          </Button>
+
         </form>
 
         {/* Séparateur visuel */}
@@ -138,15 +159,15 @@ function Login() {
         {/* Lien vers Register */}
         <p className="text-center text-slate-700 text-lg">
           Vous n'avez pas de compte ?{" "}
-          <Link 
-            to="/register" 
+          <Link
+            to="/register"
             className="text-blue-600 font-medium hover:underline"
           >
             Créer un compte
           </Link>
         </p>
 
-      </div>
+      </Card>
     </div>
   )
 }

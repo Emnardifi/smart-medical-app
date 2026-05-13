@@ -1,4 +1,4 @@
-// Import des hooks React pour gérer les états (inputs, loading, erreurs...)
+// Import des hooks React pour gérer les états
 import { useState } from "react"
 
 // Import pour navigation + lien vers login
@@ -6,6 +6,12 @@ import { useNavigate, Link } from "react-router-dom"
 
 // Import de la fonction register qui appelle le backend
 import { registerUser } from "../services/authService"
+
+// Import des composants réutilisables
+import Input from "../components/common/Input"
+import Button from "../components/common/Button"
+import Card from "../components/common/Card"
+import Loading from "../components/common/Loading"
 
 function Register() {
 
@@ -16,7 +22,8 @@ function Register() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("") 
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [adminCode, setAdminCode] = useState("")
 
   // State pour afficher les erreurs
   const [error, setError] = useState("")
@@ -24,7 +31,7 @@ function Register() {
   // State pour message de succès
   const [success, setSuccess] = useState("")
 
-  // State pour gérer le loading (bouton)
+  // State pour gérer le loading
   const [loading, setLoading] = useState(false)
 
   // Fonction appelée lors du submit du formulaire
@@ -38,7 +45,7 @@ function Register() {
     setSuccess("")
 
     // Vérification champs vides
-    if (!full_name.trim() || !email.trim() || !password || !confirmPassword) {
+    if (!name.trim() || !email.trim() || !password || !confirmPassword) {
       setError("Veuillez remplir tous les champs")
       return
     }
@@ -50,31 +57,36 @@ function Register() {
     }
 
     try {
+
       // Active loading
-      setLoading(true) //désactiver le bouton s'inscrire et afficher "Inscription..." au lieu de "S'inscrire"
+      setLoading(true)
 
       // Appel backend pour créer utilisateur
       await registerUser({
-        full_name: full_name,     
+        full_name: name,
         email: email,
         password: password,
+        admin_code: adminCode,
       })
 
       // Message succès
       setSuccess("Compte créé avec succès. Redirection vers login...")
 
-      // Redirection après 1.2s
+      // Redirection après 1.2 secondes
       setTimeout(() => {
         navigate("/login")
       }, 1200)
 
     } catch (err) {
-      // si backend retourne email déjà utilisé ou password invalide 
+
+      // Si backend retourne une erreur
       setError(
-        err.response?.data?.detail || "Erreur lors de la création du compte"
+        err.response?.data?.detail ||
+        "Erreur lors de la création du compte"
       )
 
     } finally {
+
       // Désactive loading
       setLoading(false)
     }
@@ -86,7 +98,7 @@ function Register() {
     <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
 
       {/* Carte du formulaire */}
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-10">
+      <Card className="w-full max-w-xl rounded-2xl shadow-xl p-10">
 
         {/* Titre */}
         <h1 className="text-4xl font-bold text-center text-slate-900">
@@ -99,86 +111,88 @@ function Register() {
         </p>
 
         {/* Formulaire */}
-        <form onSubmit={handleSubmit} className="mt-10 space-y-5">
+        <form onSubmit={handleSubmit} className="mt-10">
 
           {/* Champ nom */}
-          <div>
-            <label className="block text-slate-800 font-medium mb-2">
-              Nom
-            </label>
-            <input
-              type="text"
-              placeholder="Votre nom complet"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <Input
+            label="Nom"
+            name="name"
+            type="text"
+            placeholder="Votre nom complet"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
 
           {/* Champ email */}
-          <div>
-            <label className="block text-slate-800 font-medium mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              placeholder="votre.email@exemple.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <Input
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="votre.email@exemple.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
           {/* Champ mot de passe */}
-          <div>
-            <label className="block text-slate-800 font-medium mb-2">
-              Mot de passe
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <Input
+            label="Mot de passe"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-          {/* Confirmation mot de passe */}
-          <div>
-            <label className="block text-slate-800 font-medium mb-2">
-              Confirmer mot de passe
-            </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full border border-slate-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          {/* Champ confirmation mot de passe */}
+          <Input
+            label="Confirmer mot de passe"
+            name="confirmPassword"
+            type="password"
+            placeholder="••••••••"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          {/* Champ code admin optionnel */}
+         <Input
+           label="Code admin optionnel"
+           name="adminCode"
+           type="text"
+           placeholder="Laissez vide si vous êtes utilisateur"
+           value={adminCode}
+           onChange={(e) => setAdminCode(e.target.value)}
+          />
+
+          {/* Texte explicatif */}
+          <p className="text-slate-500 text-sm mb-4">
+            Laissez vide pour créer un compte utilisateur normal.
+          </p>
 
           {/* Message erreur */}
           {error && (
-            <p className="text-red-600 text-sm text-center">
+            <p className="text-red-600 text-sm text-center mb-4">
               {error}
             </p>
           )}
 
           {/* Message succès */}
           {success && (
-            <p className="text-green-600 text-sm text-center">
+            <p className="text-green-600 text-sm text-center mb-4">
               {success}
             </p>
           )}
 
+          {/* Animation loading */}
+          {loading && <Loading />}
+
           {/* Bouton inscription */}
-          <button
+          <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition disabled:opacity-60"
+            className="w-full py-3 rounded-xl font-semibold"
           >
             {loading ? "Inscription..." : "S'inscrire"}
-          </button>
+          </Button>
+
         </form>
 
         {/* Séparateur */}
@@ -191,12 +205,15 @@ function Register() {
         {/* Lien login */}
         <p className="text-center text-slate-700 text-lg">
           Vous avez déjà un compte ?{" "}
-          <Link to="/login" className="text-blue-600 font-medium hover:underline">
+          <Link
+            to="/login"
+            className="text-blue-600 font-medium hover:underline"
+          >
             Se connecter
           </Link>
         </p>
 
-      </div>
+      </Card>
     </div>
   )
 }
