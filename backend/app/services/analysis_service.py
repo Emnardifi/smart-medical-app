@@ -66,7 +66,7 @@ def _run_ai(image_path: str) -> tuple[str, float, str | None]:
         if prediction == "PNEUMONIA":
             os.makedirs("heatmaps", exist_ok=True)
             heatmap_path = generate_gradcam(image_path, save_dir="heatmaps")
-            heatmap_url = "/" + heatmap_path.replace("\\", "/")
+            heatmap_url = heatmap_path.replace("\\", "/")
 
         return prediction, probability, heatmap_url
 

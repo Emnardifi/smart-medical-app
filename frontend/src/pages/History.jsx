@@ -5,7 +5,6 @@ import Button from "../components/common/Button"
 import Loading from "../components/common/Loading"
 
 import AnalysisResult from "../components/analysis/AnalysisResult"
-import AnalysisCard from "../components/analysis/AnalysisCard"
 import ReportCard from "../components/analysis/ReportCard"
 
 import { useAnalyses } from "../hooks/useAnalyses"
@@ -27,7 +26,6 @@ const History = () => {
     handleView,
     handleDownload,
     handleDelete,
-    handleViewByAnalysis,
   } = useReports()
 
   const [activeTab, setActiveTab] = useState("analyses")
@@ -53,7 +51,7 @@ const History = () => {
   })
 
   const filteredReports = (reports || []).filter((report) => {
-    const linkedAnalysis = analyses.find(
+    const linkedAnalysis = (analyses || []).find(
       (analysis) => analysis.id === report.analysis_id
     )
 
@@ -65,13 +63,33 @@ const History = () => {
       linkedAnalysis?.prediction?.toLowerCase().includes(search.toLowerCase())
 
     const matchPrediction =
-      predictionFilter === "all" || linkedAnalysis?.prediction === predictionFilter
+      predictionFilter === "all" ||
+      linkedAnalysis?.prediction === predictionFilter
 
     const matchDate =
       dateFilter === "" || report.generated_at?.startsWith(dateFilter)
 
     return matchSearch && matchPrediction && matchDate
   })
+
+  const getReportByAnalysisId = (analysisId) => {
+    return (reports || []).find((report) => report.analysis_id === analysisId)
+  }
+
+  const viewPdfByAnalysis = async (analysisId) => {
+    const report = getReportByAnalysisId(analysisId)
+
+    if (!report) {
+      alert("Aucun rapport PDF généré pour cette analyse.")
+      return
+    }
+
+    try {
+      await handleView(report.id)
+    } catch {
+      alert("Impossible d'ouvrir le rapport PDF.")
+    }
+  }
 
   const showOriginalImage = async (id) => {
     try {
@@ -202,18 +220,75 @@ const History = () => {
               <p className="text-slate-500">Aucune analyse trouvée.</p>
             </Card>
           ) : (
-            filteredAnalyses.map((analysis, index) => (
-              <AnalysisCard
-                key={analysis.id}
-                analysis={analysis}
-                analysisNumber={index + 1}
-                onDetails={setSelectedItem}
-                onShowOriginalImage={showOriginalImage}
-                onShowHeatmap={showHeatmap}
-                onViewPdf={handleViewByAnalysis}
-                onDelete={deleteAnalysis}
-              />
-            ))
+            filteredAnalyses.map((analysis, index) => {
+              const hasReport = !!getReportByAnalysisId(analysis.id)
+              const isPneumonia = analysis.prediction === "PNEUMONIA"
+
+              return (
+                <Card key={analysis.id}>
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-900">
+                        Analyse {index + 1}
+                      </h2>
+
+                      <p className="mt-1 text-slate-700">
+                        Prédiction :{" "}
+                        <span
+                          className={
+                            isPneumonia
+                              ? "font-bold text-red-600"
+                              : "font-bold text-green-600"
+                          }
+                        >
+                          {analysis.prediction}
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                      <Button onClick={() => setSelectedItem(analysis)}>
+                        Détails
+                      </Button>
+
+                      <Button
+                        onClick={() => showOriginalImage(analysis.id)}
+                        className="bg-slate-600 hover:bg-slate-700"
+                      >
+                        Image originale
+                      </Button>
+
+                      {isPneumonia && (
+                        <Button
+                          onClick={() => showHeatmap(analysis.id)}
+                          className="bg-purple-600 hover:bg-purple-700"
+                        >
+                          Heatmap
+                        </Button>
+                      )}
+
+                      <Button
+                        onClick={() => viewPdfByAnalysis(analysis.id)}
+                        className={
+                          hasReport
+                            ? "bg-emerald-600 hover:bg-emerald-700"
+                            : "bg-gray-500 hover:bg-gray-600"
+                        }
+                      >
+                        Rapport PDF
+                      </Button>
+
+                      <Button
+                        onClick={() => deleteAnalysis(analysis.id)}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Supprimer
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              )
+            })
           )}
         </div>
       )}
@@ -226,7 +301,7 @@ const History = () => {
             </Card>
           ) : (
             filteredReports.map((report, index) => {
-              const linkedAnalysis = analyses.find(
+              const linkedAnalysis = (analyses || []).find(
                 (a) => a.id === report.analysis_id
               )
 
