@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 
 from app.core.database import Base, engine
-from fastapi.middleware.cors import CORSMiddleware
 
 # importer les modèles pour que SQLAlchemy enregistre les tables
 from app.models.user import User
@@ -15,8 +14,9 @@ from app.api.routes.user_route import router as users_router
 from app.api.routes.admin_route import router as admin_router
 from app.api.routes.analysis_route import router as analyses_router
 from app.api.routes.reports_route import router as reports_router
-
-
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
 app = FastAPI(
     title="Smart Medical App API",
     version="1.0.0",
@@ -24,15 +24,18 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+app.mount(
+    "/heatmaps",
+    StaticFiles(directory=os.path.join(BASE_DIR, "heatmaps")),
+    name="heatmaps"
+)
 #supp des tab 
 #Base.metadata.drop_all(bind=engine)
 #print("Tables supp  done.")
