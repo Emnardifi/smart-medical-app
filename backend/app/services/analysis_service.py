@@ -53,7 +53,7 @@ def _save_upload_file(upload_file, file_path: str):
         )
 
 
-def _run_ai(image_path: str) -> tuple[str, float, str]:
+def _run_ai(image_path: str) -> tuple[str, float, str | None]:
     try:
         preprocessed_image = preprocess_image(image_path)
         prediction_data = predict_image(preprocessed_image)
@@ -61,9 +61,12 @@ def _run_ai(image_path: str) -> tuple[str, float, str]:
         prediction = prediction_data["prediction"]
         probability = prediction_data["probability"]
 
-        os.makedirs("heatmaps", exist_ok=True)
-        heatmap_path = generate_gradcam(image_path, save_dir="heatmaps")
-        heatmap_url = "/" + heatmap_path.replace("\\", "/")
+        heatmap_url = None
+
+        if prediction == "PNEUMONIA":
+            os.makedirs("heatmaps", exist_ok=True)
+            heatmap_path = generate_gradcam(image_path, save_dir="heatmaps")
+            heatmap_url = "/" + heatmap_path.replace("\\", "/")
 
         return prediction, probability, heatmap_url
 
@@ -72,6 +75,9 @@ def _run_ai(image_path: str) -> tuple[str, float, str]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"ai prediction failed: {str(e)}"
         )
+        
+        
+        
 def create_analysis_service(
     db: Session,
     current_user: User,
