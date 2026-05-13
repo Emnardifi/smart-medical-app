@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
       setToken(accessToken)
 
       const userData = await getCurrentUser()
+      console.log("USER =", userData)
       setUser(userData)
 
       return userData

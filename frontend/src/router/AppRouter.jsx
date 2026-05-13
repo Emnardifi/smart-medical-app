@@ -1,70 +1,163 @@
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
+import { useAuth } from "../hooks/useAuth"
 
-import Layout from "../components/layout/Layout";
-
+import Home from "../pages/Home"
 import Login from "../pages/Login"
 import Register from "../pages/Register"
 import Dashboard from "../pages/Dashboard"
 import Analyze from "../pages/Analyze"
-import Report from "../pages/Report"
+import History from "../pages/History"
+import Reports from "../pages/Report"
 import Profile from "../pages/Profile"
-import Home from "../pages/Home"
-
+import Layout from "../components/layout/Layout"
 import ForgotPassword from "../pages/ForgotPassword"
 import ResetPassword from "../pages/ResetPassword"
+import AdminLayout from "../components/layout/AdminLayout"
+import AdminDashboard from "../pages/AdminDashboard"
+import AdminUsers from "../pages/AdminUsers"
+import AdminAnalyses from "../pages/AdminAnalyses"
+import AdminReports from "../pages/AdminReports"
+import AdminStatistics from "../pages/AdminStatistics"
+const PrivateRoute = ({ children }) => {
+  const { user, loading } = useAuth()
 
-function AppRouter() {
+  if (loading) return <p>Loading...</p>
+  if (!user) return <Navigate to="/login" />
+
+  return children
+}
+
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth()
+
+  if (loading) return <p>Loading...</p>
+  if (!user) return <Navigate to="/login" />
+  if (user.role !== "admin") return <Navigate to="/dashboard" />
+
+  return children
+}
+
+const AppRoutes = () => {
   return (
     <Routes>
-
-      {/* Redirection page principale */}
       <Route path="/" element={<Home />} />
-
-      {/* Routes publiques */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Routes avec Layout */}
       <Route
         path="/dashboard"
         element={
-          <Layout>
-            <Dashboard />
-          </Layout>
+          <PrivateRoute>
+            <Layout><Dashboard /></Layout>
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/analyze"
         element={
-          <Layout>
-            <Analyze />
-          </Layout>
+          <PrivateRoute>
+            <Layout><Analyze /></Layout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/history"
+        element={
+          <PrivateRoute>
+            <Layout><History /></Layout>
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/report"
         element={
-          <Layout>
-            <Report />
-          </Layout>
+          <PrivateRoute>
+            <Layout><Reports /></Layout>
+          </PrivateRoute>
         }
       />
 
       <Route
         path="/profile"
         element={
-          <Layout>
-            <Profile />
-          </Layout>
+          <PrivateRoute>
+            <Layout><Profile /></Layout>
+          </PrivateRoute>
         }
       />
 
+      <Route
+        path="/admin/profile"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <Profile />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin-dashboard"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin-users"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <AdminUsers />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin-analyses"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <AdminAnalyses />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin-reports"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <AdminReports />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+
+      <Route
+        path="/admin-statistics"
+        element={
+          <AdminRoute>
+            <AdminLayout>
+              <AdminStatistics />
+            </AdminLayout>
+          </AdminRoute>
+        }
+      />
+      
     </Routes>
   )
 }
 
-export default AppRouter
+export default AppRoutes

@@ -22,7 +22,7 @@ def _extract_extension(filename: str):
     if "." not in filename:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid file name"
+            detail="nom de file invalide"
         )
     return filename.rsplit(".", 1)[1].lower()
 
@@ -32,7 +32,7 @@ def _validate_image_extension(extension: str):
     if extension not in extension_list:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail="Only jpg, jpeg and png files are allowed"
+            detail="seulement jpg, jpeg et png !"
         )
 
 
@@ -115,7 +115,7 @@ def create_analysis_service(
     )
 
     return {
-        "message": "analysis completed successfully",
+        "message": "Analyse terminée avec succès.",
         "analysis_id": analysis.id,
         "prediction": analysis.prediction,
         "probability": analysis.probability,
@@ -129,7 +129,7 @@ def get_analysis_details(db: Session, analysis_id: int):
     if not analysis:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="analysis not found!"
+            detail="analyse introuvable!"
         )
     return analysis
 
@@ -143,7 +143,7 @@ def get_image_details(db: Session, image_id: int):
     if not image:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="image not found!"
+            detail="image introuvable!"
         )
     return image
 

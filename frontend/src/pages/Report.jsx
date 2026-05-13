@@ -1,133 +1,74 @@
-import { useEffect, useState } from "react"
-import ReportCard from "../components/reports/ReportCard"
-import {
-  getMyReports,
-  viewReport,
-  downloadReport,
-  deleteReport,
-} from "../services/reportService"
+import { useAnalyses } from "../hooks/useAnalyses"
+import { useReports } from "../hooks/useReports"
 
-const Report = () => {
-  const [reports, setReports] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+import Card from "../components/common/Card"
+import Loading from "../components/common/Loading"
+import ReportCard from "../components/analysis/ReportCard"
 
-  const fetchReports = async () => {
-    try {
-      setLoading(true)
-      setError("")
+const Reports = () => {
+  const { analyses, loading, error } = useAnalyses()
 
-      const data = await getMyReports()
-      setReports(Array.isArray(data) ? data : [])
-    } catch (err) {
-      setError(
-        err.response?.data?.detail ||
-          "Erreur lors du chargement des rapports"
-      )
-    } finally {
-      setLoading(false)
-    }
-  }
+  const {
+    loading: reportLoading,
+    handleDownload,
+    handleView,
+    handleGenerate,
+    handleDelete,
+  } = useReports()
 
-  useEffect(() => {
-    fetchReports()
-  }, [])
-
-  const handleView = async (id) => {
-    await viewReport(id)
-  }
-
-  const handleDownload = async (id) => {
-    await downloadReport(id)
-  }
-
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Voulez-vous vraiment supprimer ce rapport ?"
-    )
-
-    if (!confirmDelete) return
-
-    await deleteReport(id)
-    setReports((prev) => prev.filter((r) => r.id !== id))
-  }
-
-  const totalReports = reports.length
-  const generatedReports = reports.filter(
-    (r) => r.status === "generated" || r.status === "Généré" || !r.status
-  ).length
-  const failedReports = reports.filter(
-    (r) => r.status === "failed" || r.status === "Échoué"
-  ).length
+  if (loading) return <Loading />
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">
-          Rapports
-        </h1>
-
-        <p className="mt-2 text-slate-500">
-          Gérez, consultez et téléchargez vos rapports PDF.
+    <div className="space-y-6">
+      <div className="rounded-3xl bg-gradient-to-r from-blue-600 to-emerald-500 p-8 text-white shadow-lg">
+        <h1 className="text-3xl font-bold">Rapports PDF</h1>
+        <p className="mt-2 opacity-90">
+          Générez, consultez et téléchargez les rapports de vos analyses.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200">
-          <p className="text-slate-500">Total rapports</p>
-          <h2 className="text-3xl font-bold text-slate-900">
-            {totalReports}
-          </h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200">
-          <p className="text-slate-500">Rapports générés</p>
-          <h2 className="text-3xl font-bold text-green-600">
-            {generatedReports}
-          </h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200">
-          <p className="text-slate-500">Rapports échoués</p>
-          <h2 className="text-3xl font-bold text-red-600">
-            {failedReports}
-          </h2>
-        </div>
-      </div>
-
-      <div className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200">
-        <h2 className="text-xl font-bold text-slate-900 mb-6">
-          Liste des rapports
-        </h2>
-
-        {loading && (
-          <p className="text-slate-500">Chargement des rapports...</p>
-        )}
-
-        {error && (
-          <p className="text-red-600 font-medium">{error}</p>
-        )}
-
-        {!loading && reports.length === 0 && !error && (
-          <p className="text-center text-slate-500">
-            Aucun rapport trouvé.
+      {error && (
+        <Card>
+          <p className="text-sm text-red-600">
+            Erreur lors du chargement des analyses.
           </p>
-        )}
+        </Card>
+      )}
 
-        <div className="space-y-5">
-          {reports.map((report) => (
+      {reportLoading && (
+        <Card>
+          <Loading />
+          <p className="mt-2 text-sm text-slate-500">
+            Traitement du rapport en cours...
+          </p>
+        </Card>
+      )}
+
+      {analyses.length === 0 ? (
+        <Card>
+          <p className="text-slate-500">
+            Aucune analyse trouvée. Lancez d’abord une analyse.
+          </p>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {analyses.map((analysis, index) => (
             <ReportCard
-              key={report.id}
-              report={report}
-              onView={handleView}
-              onDownload={handleDownload}
-              onDelete={handleDelete}
+              key={analysis.id}
+              analysis={analysis}
+              reportNumber={index + 1}
+              analysisNumber={index + 1}
+              reportLoading={reportLoading}
+              handleGenerate={handleGenerate}
+              handleView={handleView}
+              handleDownload={handleDownload}
+              handleDelete={handleDelete}
             />
           ))}
         </div>
-      </div>
+      )}
     </div>
   )
 }
 
-export default Report
+export default Reports

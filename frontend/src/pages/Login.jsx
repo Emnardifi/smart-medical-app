@@ -62,8 +62,12 @@ function Login() {
         return
       }
 
-      // Redirection vers dashboard
-      navigate("/dashboard")
+      // Redirection selon le rôle
+      if (userData.role?.toLowerCase() === "admin") {
+        navigate("/admin-dashboard")
+      } else {
+        navigate("/dashboard")
+      }
 
     } catch (err) {
 

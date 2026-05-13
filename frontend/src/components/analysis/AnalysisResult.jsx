@@ -1,33 +1,61 @@
+import Card from "../common/Card"
+
 const AnalysisResult = ({ result }) => {
   if (!result) return null
 
-  const prediction = result.prediction
-  const probability = result.probability || 0
-
-  const risk = Math.round(result.probability * 100)
-  const confidence = Math.round((1 - result.probability) * 100)
+  const pneumoniaRisk = Math.round(result.probability * 100)
+  const normalConfidence = Math.round(
+    (1 - result.probability) * 100
+  )
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-8">
-      <h2 className="text-2xl font-bold text-slate-900 mb-6">
+    <Card>
+      <h2 className="mb-4 text-xl font-bold text-slate-800">
         Résultat
       </h2>
+      <div className="space-y-3">
+        <p className="text-lg">
+          <span className="font-semibold">
+            Prédiction :
+          </span>{" "}
+          <span
+            className={
+              result.prediction === "PNEUMONIA"
+                ? "font-bold text-red-600"
+                : "font-bold text-green-600"
+            }
+          >
+            {result.prediction}
+          </span>
+        </p>
 
-      <p className="text-xl font-bold mb-4">
-        Prédiction :{" "}
-        <span className={isNormal ? "text-green-600" : "text-red-600"}>
-          {prediction}
-        </span>
-      </p>
+        <p className="text-lg">
+          <span className="font-semibold">
+            Risque de pneumonie :
+          </span>{" "}
+          {pneumoniaRisk}%
+        </p>
 
-      <p className="text-xl font-bold mb-4">
-        Risque de pneumonie : {risk}%
-      </p>
+        {result.prediction === "NORMAL" && (
+          <p className="text-lg">
+            <span className="font-semibold">
+              Confiance NORMAL :
+            </span>{" "}
+            {normalConfidence}%
+          </p>
+        )}
 
-      <p className="text-xl font-bold">
-        Confiance {prediction} : {confidence}%
-      </p>
-    </div>
+        {/* Date création */}
+        {result.created_at && (
+          <p className="text-sm text-slate-500">
+            <span className="font-semibold">
+              Date de création :
+            </span>{" "}
+            {new Date(result.created_at).toLocaleString()}
+          </p>
+        )}
+      </div>
+    </Card>
   )
 }
 
