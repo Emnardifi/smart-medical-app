@@ -1,5 +1,5 @@
 import { useState } from "react"
-
+import { useNavigate } from "react-router-dom"
 import ImageUploader from "../components/analysis/ImageUploader"
 import AnalysisResult from "../components/analysis/AnalysisResult"
 import AnalysisCard from "../components/analysis/AnalysisCard"
@@ -11,6 +11,7 @@ import Button from "../components/common/Button"
 import { useAnalyses } from "../hooks/useAnalyses"
 
 const Analyze = () => {
+  const navigate = useNavigate()
   const {
     analyses,
     loading,
@@ -122,6 +123,7 @@ const Analyze = () => {
                 onShowOriginalImage={showOriginalImage}
                 onShowHeatmap={showHeatmap}
                 onDelete={handleDelete}
+                onGoToReports={() => navigate("/report")}
               />
             ))}
           </div>

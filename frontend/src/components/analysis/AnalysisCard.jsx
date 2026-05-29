@@ -11,6 +11,7 @@ const AnalysisCard = ({
   onViewPdf,
   onDownloadPdf,
   onDelete,
+  onGoToReports,
 }) => {
   return (
     <div className="flex flex-col gap-4 rounded-xl border p-4 md:flex-row md:items-center md:justify-between">
@@ -139,6 +140,14 @@ const AnalysisCard = ({
           </Button>
         )}
 
+        {onGoToReports && (
+          <Button
+            onClick={onGoToReports}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Générer / Télécharger rapport
+          </Button>
+        )}
         {onDelete && (
           <Button
             onClick={() => onDelete(analysis.id)}

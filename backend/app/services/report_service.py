@@ -80,13 +80,13 @@ def _create_pdf(
     pdf.set_fill_color(30, 100, 200)
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Arial", "B", 18)
-    pdf.cell(W, 14, "Smart Medical Analysis Report", border=0, ln=1, align="C", fill=True)
+    pdf.cell(W, 14, "Rapport d'Analyse Médicale Intelligente", border=0, ln=1, align="C", fill=True)
     pdf.ln(4)
 
-    # ── 2. Infos patient ─────────────────────────────────────────
+    # ── 2. Infos Docteur ─────────────────────────────────────────
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "B", 10)
-    pdf.cell(30, 7, "Patient:", ln=0)
+    pdf.cell(30, 7, "Docteur:", ln=0)
     pdf.set_font("Arial", "", 10)
     pdf.cell(0, 7, str(user.full_name), ln=1)
 
@@ -96,7 +96,7 @@ def _create_pdf(
     pdf.cell(0, 7, str(user.email), ln=1)
 
     pdf.set_font("Arial", "B", 10)
-    pdf.cell(30, 7, "Created at:", ln=0)
+    pdf.cell(30, 7, "Créé le:", ln=0)
     pdf.set_font("Arial", "", 10)
     pdf.cell(0, 7, created_at.strftime("%Y-%m-%d %H:%M"), ln=1)
 
@@ -107,10 +107,10 @@ def _create_pdf(
 
     # ── 3. Results ───────────────────────────────────────────────
     pdf.set_font("Arial", "B", 13)
-    pdf.cell(0, 8, "Results", ln=1)
+    pdf.cell(0, 8, "Résultats", ln=1)
 
     pdf.set_font("Arial", "B", 10)
-    pdf.cell(30, 7, "Prediction:", ln=0)
+    pdf.cell(30, 7, "Prédiction:", ln=0)
     pdf.set_font("Arial", "B", 11)
     if (prediction or "").lower() == "pneumonia":
         pdf.set_text_color(200, 0, 0)
@@ -120,7 +120,7 @@ def _create_pdf(
 
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "B", 10)
-    pdf.cell(30, 7, "Confidence:", ln=0)
+    pdf.cell(60, 7, "Niveau de confiance:", ln=0)
     pdf.set_font("Arial", "B", 11)
     pdf.cell(0, 7, f"{probability:.2%}", ln=1)
 
@@ -141,9 +141,9 @@ def _create_pdf(
     # Labels
     pdf.set_font("Arial", "B", 9)
     pdf.set_xy(x_left, y_labels)
-    pdf.cell(IMG_W, 6, "Original Image", align="C", ln=0)
+    pdf.cell(IMG_W, 6, "Image originale", align="C", ln=0)
     pdf.set_xy(x_right, y_labels)
-    pdf.cell(IMG_W, 6, "Heatmap (AI Explanation)", align="C", ln=1)
+    pdf.cell(IMG_W, 6, "Carte thermique (Explication de l'IA)", align="C", ln=1)
 
     y_imgs = pdf.get_y()
 
@@ -154,7 +154,7 @@ def _create_pdf(
     else:
         pdf.set_xy(x_left, y_imgs)
         pdf.set_font("Arial", "", 9)
-        pdf.cell(IMG_W, IMG_H, "Original image not found", border=1, align="C")
+        pdf.cell(IMG_W, IMG_H, "Image originale non disponible", border=1, align="C")
 
     # Image droite
     real_heat = resolve(heatmap_path)
@@ -163,21 +163,21 @@ def _create_pdf(
     else:
         pdf.set_xy(x_right, y_imgs)
         pdf.set_font("Arial", "", 9)
-        pdf.cell(IMG_W, IMG_H, "Heatmap not found", border=1, align="C")
+        pdf.cell(IMG_W, IMG_H, "Carte thermique non disponible", border=1, align="C")
 
     pdf.set_y(y_imgs + IMG_H + 6)
 
     # ── 5. Interpretation ────────────────────────────────────────
     pdf.set_font("Arial", "B", 13)
-    pdf.cell(0, 8, "Interpretation:", ln=1)
+    pdf.cell(0, 8, "Interprétation:", ln=1)
 
     pdf.set_fill_color(235, 245, 255)
     pdf.set_font("Arial", "", 10)
     pdf.set_draw_color(180, 180, 180)
     items = [
-        "[ R ]  Red zones indicate potential pneumonia regions",
-        "[ B ]  Blue zones indicate normal areas",
-        "[ - ]  Heatmap explains AI decision",
+        "[R] Les zones rouges indiquent des régions potentielles de pneumonie",
+        "[B] Les zones bleues indiquent les zones normales",
+        "[-] La carte thermique explique la décision de l'intelligence artificielle",
     ]
     for item in items:
         pdf.cell(W, 8, item, border="B", ln=1, fill=True)
@@ -189,7 +189,7 @@ def _create_pdf(
     pdf.ln(2)
     pdf.set_font("Arial", "I", 8)
     pdf.set_text_color(80, 80, 80)
-    pdf.cell(W, 8, "Smart Medical App - AI Powered Diagnosis", align="C")
+    pdf.cell(W, 8, "Smart Medical App - Diagnostic assisté par intelligence artificielle", align="C")
 
     pdf.output(file_path)
 
@@ -209,22 +209,36 @@ def generate_report_for_analysis(db: Session, current_user: User, analysis_id: i
 
     pdf_path = _generate_pdf_path(analysis_id)
 
-    _create_pdf(
-        file_path=pdf_path,
-        prediction=analysis.prediction,
-        probability=analysis.probability,
-        original_image_path=image.stored_path if image else None,
-        heatmap_path=analysis.heatmap_path,
-        created_at=analysis.created_at,
-        user=current_user
-    )
+    try:
+        _create_pdf(
+            file_path=pdf_path,
+            prediction=analysis.prediction,
+            probability=analysis.probability,
+            original_image_path=image.stored_path if image else None,
+            heatmap_path=analysis.heatmap_path,
+            created_at=analysis.created_at,
+            user=current_user
+        )
 
-    report = create_report(
-        db,
-        analysis_id,
-        pdf_path,
-        status="generated"
-    )
+        report = create_report(
+            db,
+            analysis_id,
+            pdf_path,
+            status="generated"
+        )
+
+    except Exception as e:
+        report = create_report(
+            db,
+            analysis_id,
+            pdf_path,
+            status="failed"
+        )
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erreur lors de la génération du rapport: {str(e)}"
+        )
 
     return {
         "message": "Rapport généré avec succès.!",
