@@ -35,11 +35,15 @@ const History = () => {
   const [selectedImage, setSelectedImage] = useState(null)
   const [selectedItem, setSelectedItem] = useState(null)
 
-  const filteredAnalyses = (analyses || []).filter((analysis) => {
+  const filteredAnalyses = (analyses || []).filter((analysis, index) => {
+    const searchValue = search.toLowerCase()
+    const analysisLabel = `analyse ${index + 1}`
+
     const matchSearch =
       search === "" ||
-      String(analysis.id).includes(search) ||
-      analysis.prediction?.toLowerCase().includes(search.toLowerCase())
+      String(analysis.id).includes(searchValue) ||
+      analysisLabel.includes(searchValue) ||
+      analysis.prediction?.toLowerCase().includes(searchValue)
 
     const matchPrediction =
       predictionFilter === "all" || analysis.prediction === predictionFilter

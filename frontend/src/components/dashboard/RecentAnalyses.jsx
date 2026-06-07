@@ -63,7 +63,7 @@ const RecentAnalyses = ({ analyses = [] }) => {
                 </div>
 
                 <Link
-                  to="/reports"
+                  to="/report"
                   className="text-sm font-medium text-blue-600 hover:underline"
                 >
                   Voir rapport

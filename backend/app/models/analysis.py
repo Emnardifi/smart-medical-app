@@ -28,4 +28,4 @@ class Analysis(Base):
     status = Column(String(20), default="done", nullable=False)
 
     # date de création de l'analyse
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now())

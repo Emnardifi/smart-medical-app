@@ -19,11 +19,11 @@ def generate_gradcam(image_path: str, save_dir: str) -> str:
 
     original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
 
-    # Sous-modèle DenseNet
+    # recuperation de densenet121 
     base_model = model.get_layer("densenet121")
     last_conv_layer = base_model.get_layer(LAST_CONV_LAYER_NAME)
 
-    # Modèle intermédiaire : même entrée -> sortie conv + sortie DenseNet
+    #creation d un modele intermediaire : même entrée mais sortie conv + sortie DenseNet
     feature_model = tf.keras.models.Model(
         inputs=base_model.input,
         outputs=[last_conv_layer.output, base_model.output]
@@ -44,10 +44,12 @@ def generate_gradcam(image_path: str, save_dir: str) -> str:
 
     if gap_layer is None or dense_layer is None:
         raise ValueError("Impossible de retrouver les couches de classification du modèle.")
-
+    
+    #conversion de l image en float32: pour calcul des gradient plus facilement 
     inputs = tf.cast(preprocessed_image, tf.float32)
 
     with tf.GradientTape() as tape:
+        #passage de limage dans le modele 
         conv_outputs, base_outputs = feature_model(inputs, training=False)
         tape.watch(conv_outputs)
 
@@ -58,28 +60,34 @@ def generate_gradcam(image_path: str, save_dir: str) -> str:
 
         predictions = dense_layer(x)
         class_score = predictions[:, 0]
-
+        
+    #clacul de gradients : influence de chq carte de caracte sur score
     grads = tape.gradient(class_score, conv_outputs)
 
     if grads is None:
         raise ValueError("GradCAM gradients are None.")
-
+    
+    #calcul moyenne des gradients ppour l importance global 
     pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
 
     conv_outputs = conv_outputs[0]
+    
+    #construction de heatmap 
     heatmap = tf.reduce_sum(conv_outputs * pooled_grads, axis=-1)
-
+    #application de relu : val positif pour les zones 
     heatmap = tf.maximum(heatmap, 0)
+    #normalisation : recuperation de maxx 
     max_val = tf.reduce_max(heatmap)
-
+    #applicat de normali entre 0 et 1 pour la convertir en img couleur 
     if float(max_val) == 0.0:
         heatmap = np.zeros_like(heatmap.numpy())
     else:
         heatmap = (heatmap / max_val).numpy()
 
-    # Améliorer le focus de la heatmap
+    # améliorer le focus de la heatmap
     heatmap = np.power(heatmap, 2)
-
+    
+    #redimensionnemt a la taille de limage originale
     heatmap = cv2.resize(
         heatmap,
         (original_image.shape[1], original_image.shape[0])
@@ -89,9 +97,10 @@ def generate_gradcam(image_path: str, save_dir: str) -> str:
     heatmap_uint8 = np.uint8(255 * heatmap)
     heatmap_color = cv2.applyColorMap(heatmap_uint8, cv2.COLORMAP_JET)
 
-    # Superposition avec l'image originale
+    #  conversion vers bgr 
     original_bgr = cv2.cvtColor(original_image, cv2.COLOR_RGB2BGR)
-
+    
+    #superposition avec l'image originale
     superimposed_img = cv2.addWeighted(
         original_bgr,
         0.65,

@@ -19,4 +19,4 @@ class Report(Base):
     status = Column(String(20), default="generated", nullable=False)
 
     # date de génération du rapport
-    generated_at = Column(DateTime(timezone=True), server_default=func.now())
+    generated_at = Column(DateTime, server_default=func.now())

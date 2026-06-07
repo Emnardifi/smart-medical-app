@@ -19,4 +19,4 @@ class User(Base):
     # date de création du compte
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     # date de dernière modification
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

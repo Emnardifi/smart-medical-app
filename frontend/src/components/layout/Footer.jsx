@@ -2,10 +2,10 @@ import { Link } from "react-router-dom"
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-br from-slate-900 to-slate-800 text-white mt-20">
+    <footer className="bg-gradient-to-br from-slate-900 to-slate-800 text-white mt-20" id="contact">
       <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10">
         
-        {/* 🔹 Logo + description */}
+        {/*  logo */}
         <div>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-emerald-500 flex items-center justify-center font-bold">
@@ -20,7 +20,7 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* 🔹 Navigation */}
+        {/* navigation*/}
         <div>
           <h4 className="font-semibold mb-4 text-white">Navigation</h4>
           <ul className="space-y-2 text-gray-400 text-sm">
@@ -31,7 +31,7 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* 🔹 Services */}
+        {/*services */}
         <div>
           <h4 className="font-semibold mb-4 text-white">Services</h4>
           <ul className="space-y-2 text-gray-400 text-sm">
@@ -42,7 +42,7 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* 🔹 Contact */}
+        {/* contact */}
         <div>
           <h4 className="font-semibold mb-4 text-white">Contact</h4>
           <ul className="space-y-2 text-gray-400 text-sm">
@@ -51,7 +51,7 @@ const Footer = () => {
             <li>🎓 Projet PFE</li>
           </ul>
 
-          {/* Social */}
+          {/* social */}
           <div className="flex gap-3 mt-4">
             <div className="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center hover:bg-blue-600 cursor-pointer">🌐</div>
             <div className="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center hover:bg-blue-500 cursor-pointer">🐦</div>
@@ -60,7 +60,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* 🔻 bottom */}
+      {/* bottom */}
       <div className="border-t border-slate-700 text-center py-5 text-gray-400 text-sm">
         © 2026 Smart Medical App — Tous droits réservés
       </div>

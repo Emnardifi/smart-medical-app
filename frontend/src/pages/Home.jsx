@@ -63,7 +63,7 @@ const Home = () => {
 
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-14 items-center min-h-[85vh] relative z-10">
           
-          {/* LEFT SIDE */}
+          {/* left side */}
           <motion.div
             initial={{ opacity: 0, x: -70 }}
             animate={{ opacity: 1, x: 0 }}
@@ -103,7 +103,7 @@ const Home = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT IMAGE */}
+          {/* right img */}
           <motion.div
             className="relative"
             initial={{
@@ -126,7 +126,7 @@ const Home = () => {
               }}
               className="relative bg-white/70 backdrop-blur-2xl rounded-[2rem] shadow-2xl p-5 border border-white"
             >
-              {/* AUTO IMAGE SLIDER */}
+              {/* aoto imge */}
               <div className="relative overflow-hidden rounded-[1.5rem]">
                 <AnimatePresence mode="wait">
                   <motion.img
@@ -187,7 +187,7 @@ const Home = () => {
       </section>
 
       {/* FEATURES */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-white" id="features">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-4xl font-bold text-center mb-14">
             Fonctionnalités principales
@@ -223,7 +223,7 @@ const Home = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-gradient-to-r from-blue-600 to-green-500 text-white">
+      <section className="py-24 bg-gradient-to-r from-blue-600 to-green-500 text-white" id="innovation">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <ShieldCheck
             size={60}

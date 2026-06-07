@@ -21,5 +21,5 @@ class Image(Base):
     file_format = Column(String(20), nullable=False)
 
     # date d'upload
-    uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
+    uploaded_at = Column(DateTime, server_default=func.now())
     

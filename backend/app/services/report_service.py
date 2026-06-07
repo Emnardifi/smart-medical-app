@@ -76,14 +76,14 @@ def _create_pdf(
     pdf.set_margins(15, 10, 15)
     W = 180  # largeur utile
 
-    # ── 1. Header ────────────────────────────────────────────────
+    #  Header 
     pdf.set_fill_color(30, 100, 200)
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Arial", "B", 18)
     pdf.cell(W, 14, "Rapport d'Analyse Médicale Intelligente", border=0, ln=1, align="C", fill=True)
     pdf.ln(4)
 
-    # ── 2. Infos Docteur ─────────────────────────────────────────
+    # Infos Docteur 
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "B", 10)
     pdf.cell(30, 7, "Docteur:", ln=0)
@@ -105,7 +105,7 @@ def _create_pdf(
     pdf.line(15, pdf.get_y(), 195, pdf.get_y())
     pdf.ln(4)
 
-    # ── 3. Results ───────────────────────────────────────────────
+    #  Results 
     pdf.set_font("Arial", "B", 13)
     pdf.cell(0, 8, "Résultats", ln=1)
 
@@ -121,14 +121,20 @@ def _create_pdf(
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", "B", 10)
     pdf.cell(60, 7, "Niveau de confiance:", ln=0)
-    pdf.set_font("Arial", "B", 11)
-    pdf.cell(0, 7, f"{probability:.2%}", ln=1)
 
+    if (prediction or "").upper() == "PNEUMONIA":
+        confidence = probability
+    else:
+        confidence = 1 - probability
+
+    pdf.set_font("Arial", "B", 11)
+    pdf.cell(0, 7, f"{confidence:.2%}", ln=1)
+        
     pdf.ln(3)
     pdf.line(15, pdf.get_y(), 195, pdf.get_y())
     pdf.ln(4)
 
-    # ── 4. Images côte à côte ─────────────────────────────────────
+    # Images côte à côte
     pdf.set_font("Arial", "B", 13)
     pdf.cell(0, 8, "Images", ln=1)
 
@@ -167,7 +173,7 @@ def _create_pdf(
 
     pdf.set_y(y_imgs + IMG_H + 6)
 
-    # ── 5. Interpretation ────────────────────────────────────────
+    # Interpretation
     pdf.set_font("Arial", "B", 13)
     pdf.cell(0, 8, "Interprétation:", ln=1)
 
@@ -184,7 +190,7 @@ def _create_pdf(
 
     pdf.ln(8)
 
-    # ── 6. Footer ────────────────────────────────────────────────
+    # footer
     pdf.line(15, pdf.get_y(), 195, pdf.get_y())
     pdf.ln(2)
     pdf.set_font("Arial", "I", 8)

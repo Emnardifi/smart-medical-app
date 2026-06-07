@@ -26,5 +26,21 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+api.interceptors.response.use(
+  (response) => response,
+
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token")
+
+      alert("Votre session a expiré. Veuillez vous reconnecter.")
+
+      window.location.href = "/login"
+    }
+
+    return Promise.reject(error)
+  }
+)
+
 // Export de l'instance api pour pouvoir l'utiliser dans tout le projet
 export default api
